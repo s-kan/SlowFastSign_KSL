@@ -227,6 +227,9 @@ class Processor():
             dataset_list = zip(["train", "train_eval", "dev", "test"], [True, False, False, False]) 
         elif self.arg.dataset == 'CSL-Daily':
             dataset_list = zip(["train", "train_eval", "dev", "test"], [True, False, False, False])
+        # add KSL data
+        elif self.arg.dataset == 'KSL':
+            dataset_list = zip(["train", "test"], [True, False])
         for idx, (mode, train_flag) in enumerate(dataset_list):
             arg = self.arg.feeder_args
             arg["prefix"] = self.arg.dataset_info['dataset_root']
