@@ -18,21 +18,21 @@ def csv2dict(anno_path, dataset_type):
     inputs_list = inputs_list[(inputs_list['Num'] >= 4002) & (inputs_list['Num'] <= 6000)]
 
     info_dict = dict()
-    info_dict['KSL'] = "../dataset/KSL/"
+    info_dict['KSL'] = "../dataset/KSL/fullFrame-1960x1080px"
 
     print(f"Generate information dict from {anno_path}")
     for file_idx, row in tqdm(inputs_list.iterrows(), total=len(inputs_list)):
         fileid = row['Num']
-        folder = row['Foldername']
+        folder = row['Foldername'] + '/*.jpg'
         label = row['Kor']
 
         # 각 영상에 해당하는 프레임의 수 계산
-        num_frames = len(glob.glob(f"{info_dict['KSL']}/{folder}/*.jpg"))
+        num_frames = len(glob.glob(f"{info_dict['KSL']}/train/{folder}/*.jpg"))
 
         # 딕셔너리에 정보 저장
         info_dict[file_idx] = {
             'fileid': fileid,
-            'folder': f"{dataset_type}/{folder}",
+            'folder': f"train/{folder}",
             'label': label,
             'num_frames': num_frames,
             'original_info': row
@@ -46,7 +46,7 @@ def generate_gt_stm(info, save_path):
         for k, v in info.items():
             if not isinstance(k, int):
                 continue
-            f.writelines(f"{v['fileid']} 1 {v['signer']} 0.0 1.79769e+308 {v['label']}\n")
+            f.writelines(f"{v['fileid']} 1 {v['folder']} 0.0 1.79769e+308 {v['label']}\n")
 
 
 def sign_dict_update(total_dict, info):
@@ -72,9 +72,10 @@ def resize_img(img_path, dsize='210x260px'):
 def resize_dataset(video_idx, dsize, info_dict):
     info = info_dict[video_idx]
     img_list = glob.glob(f"{info_dict['KSL']}/{info['folder']}")
+
     for img_path in img_list:
         rs_img = resize_img(img_path, dsize=dsize)
-        rs_img_path = img_path.replace("210x260px", dsize)
+        rs_img_path = img_path.replace("1960x1080px", dsize)
         rs_img_dir = os.path.dirname(rs_img_path)
         if not os.path.exists(rs_img_dir):
             os.makedirs(rs_img_dir)
@@ -98,7 +99,7 @@ if __name__ == '__main__':
         description='Data process for Visual Alignment Constraint for Continuous Sign Language Recognition.')
     parser.add_argument('--dataset', type=str, default='KSL',
                         help='save KSL')
-    parser.add_argument('--dataset-root', type=str, default='../output_frames03/',
+    parser.add_argument('--dataset-root', type=str, default='../dataset/KSL',
                         help='path to the dataset')
     parser.add_argument('--annotation-KSL', type=str, default='./KSL/NIA_SEN_test.csv',
                         help='annotation prefix')
@@ -110,13 +111,14 @@ if __name__ == '__main__':
                         help='whether adopts multiprocessing to accelate the preprocess')
 
     args = parser.parse_args()
-    mode = ["dev", "test", "train"]
+    mode = ["train"]
     sign_dict = dict()
     if not os.path.exists(f"./{args.dataset}"):
         os.makedirs(f"./{args.dataset}")
     for md in mode:
         # generate information dict
-        information = csv2dict("KSL/NIA_SEN_test.csv", dataset_type=md)
+        information = csv2dict("./KSL/NIA_SEN_test.csv", dataset_type=md)
+        
         np.save(f"./{args.dataset}/{md}_info.npy", information)
         # update the total gloss dict
         sign_dict_update(sign_dict, information)
@@ -124,6 +126,8 @@ if __name__ == '__main__':
         generate_gt_stm(information, f"./{args.dataset}/{args.dataset}-groundtruth-{md}.stm")
         # resize images
         video_index = np.arange(len(information) - 1)
+        print(video_index)
+        
         print(f"Resize image to {args.output_res}")
         if args.process_image:
             if args.multiprocessing:
