@@ -3,7 +3,7 @@ import os
 import cv2
 import pdb
 import glob
-import pandas
+import pandas as pd
 import argparse
 import numpy as np
 from tqdm import tqdm
