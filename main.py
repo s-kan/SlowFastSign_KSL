@@ -78,6 +78,7 @@ class Processor():
                 eval_model = epoch % self.arg.eval_interval == 0
                 epoch_time = time.time()
                 # train end2end model
+                print(self.data_loader['train'])
                 seq_train(self.data_loader['train'], self.model, self.optimizer,
                           self.device, epoch, self.recoder)
                 if eval_model:
@@ -229,7 +230,7 @@ class Processor():
             dataset_list = zip(["train", "train_eval", "dev", "test"], [True, False, False, False])
         # add KSL data
         elif self.arg.dataset == 'KSL':
-            dataset_list = zip(["train", "test"], [True, False])
+            dataset_list = zip(["train", "dev"], [True, False])
         for idx, (mode, train_flag) in enumerate(dataset_list):
             arg = self.arg.feeder_args
             arg["prefix"] = self.arg.dataset_info['dataset_root']

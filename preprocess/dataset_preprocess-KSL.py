@@ -15,7 +15,7 @@ def csv2dict(anno_path, dataset_type):
     inputs_list = pd.read_csv(anno_path)
 
     # 4002번에서 6000번까지의 데이터만 선택
-    inputs_list = inputs_list[(inputs_list['Num'] >= 4002) & (inputs_list['Num'] <= 6000)]
+    # inputs_list = inputs_list[(inputs_list['Num'] >= 4002) & (inputs_list['Num'] <= 6000)]
 
     info_dict = dict()
     info_dict['KSL'] = "../dataset/KSL/fullFrame-1960x1080px"
@@ -101,7 +101,7 @@ if __name__ == '__main__':
                         help='save KSL')
     parser.add_argument('--dataset-root', type=str, default='../dataset/KSL',
                         help='path to the dataset')
-    parser.add_argument('--annotation-KSL', type=str, default='./KSL/NIA_SEN_test.csv',
+    parser.add_argument('--annotation-KSL', type=str, default='./KSL/NIA_SEN_{}.csv',
                         help='annotation prefix')
     parser.add_argument('--output-res', type=str, default='256x256px',
                         help='resize resolution for image sequence')
@@ -111,13 +111,13 @@ if __name__ == '__main__':
                         help='whether adopts multiprocessing to accelate the preprocess')
 
     args = parser.parse_args()
-    mode = ["train"]
+    mode = ["train", "dev"]
     sign_dict = dict()
     if not os.path.exists(f"./{args.dataset}"):
         os.makedirs(f"./{args.dataset}")
     for md in mode:
         # generate information dict
-        information = csv2dict("./KSL/NIA_SEN_test.csv", dataset_type=md)
+        information = csv2dict(f"{args.annotation_KSL.format(md)}", dataset_type=md)
         
         np.save(f"./{args.dataset}/{md}_info.npy", information)
         # update the total gloss dict

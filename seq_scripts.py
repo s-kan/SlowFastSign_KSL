@@ -19,9 +19,11 @@ def seq_train(loader, model, optimizer, device, epoch_idx, recoder):
     tqdm_loader = tqdm(loader, ncols=100)
     nan = 0
     for batch_idx, data in enumerate(tqdm_loader):
+        print(device)
         vid = device.data_to_device(data[0])
         vid_lgt = device.data_to_device(data[1])
         label = device.data_to_device(data[2])
+        print(label)
         label_lgt = device.data_to_device(data[3])
         optimizer.zero_grad()
         with autocast():

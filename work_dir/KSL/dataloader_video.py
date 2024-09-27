@@ -60,6 +60,7 @@ class BaseFeeder(data.Dataset):
     def read_video(self, index):
         # load file info
         fi = self.inputs_list[index]
+ 
         if 'phoenix' in self.dataset:
             img_folder = os.path.join(self.prefix, "features/fullFrame-256x256px/" + fi['folder'])  
         elif self.dataset == 'CSL':
@@ -67,6 +68,7 @@ class BaseFeeder(data.Dataset):
         elif self.dataset == 'CSL-Daily':
             img_folder = os.path.join(self.prefix, fi['folder'])
         elif self.dataset == 'KSL':
+            
             img_folder = os.path.join(self.prefix, "fullFrame-256x256px/" + fi['folder'])
         img_list = sorted(glob.glob(img_folder))
         img_list = img_list[int(torch.randint(0, self.frame_interval, [1]))::self.frame_interval]
