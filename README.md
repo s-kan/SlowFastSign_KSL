@@ -72,7 +72,7 @@ wget https://dl.fbaipublicfiles.com/pyslowfast/model_zoo/ava/pretrain/SLOWFAST_6
 
 To train the SlowFastSign model, run the command below:
 ```bash
-python main.py --device 0 --dataset KSL --loss-weights Slow=0.25 Fast=0.25 --work-dir ./work_dir/KSL/
+python main.py --device 0 --dataset KSL --loss-weights Slow=0.25 Fast=0.25 --work-dir ./work_dir/KSL/ --batch-size 1
 ```
 You can check other arguments for training from `utils/parameters.py`
 
