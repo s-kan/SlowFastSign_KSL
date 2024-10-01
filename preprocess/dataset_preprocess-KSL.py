@@ -14,9 +14,6 @@ from multiprocessing import Pool
 def csv2dict(anno_path, dataset_type):
     inputs_list = pd.read_csv(anno_path)
 
-    # 4002번에서 6000번까지의 데이터만 선택
-    # inputs_list = inputs_list[(inputs_list['Num'] >= 4002) & (inputs_list['Num'] <= 6000)]
-
     info_dict = dict()
     info_dict['KSL'] = "../dataset/KSL/fullFrame-1960x1080px"
 
@@ -26,16 +23,18 @@ def csv2dict(anno_path, dataset_type):
         folder = row['Foldername'] + '/*.jpg'
         label = row['Kor']
 
+        tmp = folder + '|' + label
+
         # 각 영상에 해당하는 프레임의 수 계산
         num_frames = len(glob.glob(f"{info_dict['KSL']}/train/{folder}/*.jpg"))
 
         # 딕셔너리에 정보 저장
         info_dict[file_idx] = {
             'fileid': fileid,
-            'folder': f"train/{folder}",
+            'folder': dataset_type + f"/{folder}",
             'label': label,
             'num_frames': num_frames,
-            'original_info': row
+            'original_info': tmp
         }
 
     return info_dict
@@ -111,7 +110,7 @@ if __name__ == '__main__':
                         help='whether adopts multiprocessing to accelate the preprocess')
 
     args = parser.parse_args()
-    mode = ["train", "dev"]
+    mode = ["train", "dev", "test"]
     sign_dict = dict()
     if not os.path.exists(f"./{args.dataset}"):
         os.makedirs(f"./{args.dataset}")

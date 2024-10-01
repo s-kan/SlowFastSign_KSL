@@ -78,16 +78,17 @@ class Processor():
                 save_model = epoch % self.arg.save_interval == 0
                 eval_model = epoch % self.arg.eval_interval == 0
                 epoch_time = time.time()
+                print(self.data_loader['dev'])
                 # train end2end model
-                # seq_train(self.data_loader['train'], self.model, self.optimizer,
-                #           self.device, epoch, self.recoder)
+                seq_train(self.data_loader['train'], self.model, self.optimizer,
+                          self.device, epoch, self.recoder)
                 if eval_model:
                     dev_wer = seq_eval(self.arg, self.data_loader['dev'], self.model, self.device,
                                        'dev', epoch, self.arg.work_dir, self.recoder, self.arg.evaluate_tool)
                     self.recoder.print_log("Dev WER: {:05.2f}%".format(dev_wer))
-                    # test_wer = seq_eval(self.arg, self.data_loader["test"], self.model, self.device,
-                    #                     "test", 6667, self.arg.work_dir, self.recoder, self.arg.evaluate_tool)
-                    # self.recoder.print_log("Test WER: {:05.2f}%".format(test_wer))
+                    test_wer = seq_eval(self.arg, self.data_loader["test"], self.model, self.device,
+                                        "test", 6667, self.arg.work_dir, self.recoder, self.arg.evaluate_tool)
+                    self.recoder.print_log("Test WER: {:05.2f}%".format(test_wer))
                 if dev_wer < best_dev:
                     best_dev = dev_wer
                     best_epoch = epoch
@@ -95,17 +96,16 @@ class Processor():
                     self.save_model(epoch, model_path)
                     self.recoder.print_log('Save best model')
                 self.recoder.print_log('Best_dev: {:05.2f}, Epoch : {}'.format(best_dev, best_epoch))
-                # avg_wer = (dev_wer + test_wer) / 2.0
-                # avg_wer = dev_wer
-                # if avg_wer < best_avg:
-                #     best_avg = avg_wer
-                #     model_path = "{}dev_{:05.2f}_test_{:05.2f}_epoch{}_model.pt".format(self.arg.work_dir, dev_wer, test_wer, epoch)
-                #     self.save_model(epoch, model_path)
-                # if save_model:
-                #     model_path = "{}dev_{:05.2f}_epoch{}_model.pt".format(self.arg.work_dir, dev_wer, epoch)
-                #     seq_model_list.append(model_path)
-                #     print("seq_model_list", seq_model_list)
-                #     self.save_model(epoch, model_path)
+                avg_wer = (dev_wer + test_wer) / 2.0
+                if avg_wer < best_avg:
+                    best_avg = avg_wer
+                    model_path = "{}dev_{:05.2f}_test_{:05.2f}_epoch{}_model.pt".format(self.arg.work_dir, dev_wer, test_wer, epoch)
+                    self.save_model(epoch, model_path)
+                if save_model:
+                    model_path = "{}dev_{:05.2f}_epoch{}_model.pt".format(self.arg.work_dir, dev_wer, epoch)
+                    seq_model_list.append(model_path)
+                    print("seq_model_list", seq_model_list)
+                    self.save_model(epoch, model_path)
                 epoch_time = time.time() - epoch_time
                 total_time += epoch_time
                 torch.cuda.empty_cache()

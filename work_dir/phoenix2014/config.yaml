@@ -1,11 +1,11 @@
-batch_size: 1
+batch_size: 2
 config: ./configs/baseline.yaml
-dataset: KSL
+dataset: phoenix2014
 dataset_info:
-  dataset_root: ./dataset/KSL
-  dict_path: ./preprocess/KSL/gloss_dict.npy
+  dataset_root: ./dataset/phoenix2014/phoenix-2014-multisigner
+  dict_path: ./preprocess/phoenix2014/gloss_dict.npy
   evaluation_dir: ./evaluation/slr_eval
-  evaluation_prefix: KSL-groundtruth
+  evaluation_prefix: phoenix2014-groundtruth
 decode_mode: beam
 device: '0'
 eval_interval: 1
@@ -37,7 +37,7 @@ model_args:
   share_classifier: 1
   use_bn: 1
   weight_norm: true
-num_epoch: 1
+num_epoch: 80
 num_worker: 4
 optimizer_args:
   base_lr: 0.0001
@@ -59,4 +59,4 @@ save_interval: 5
 slowfast_args: {}
 slowfast_config: SLOWFAST_64x2_R101_50_50.yaml
 test_batch_size: 2
-work_dir: ./work_dir/KSL/
+work_dir: ./work_dir/phoenix2014/
