@@ -125,7 +125,6 @@ if __name__ == '__main__':
         generate_gt_stm(information, f"./{args.dataset}/{args.dataset}-groundtruth-{md}.stm")
         # resize images
         video_index = np.arange(len(information) - 1)
-        print(video_index)
         
         print(f"Resize image to {args.output_res}")
         if args.process_image:
